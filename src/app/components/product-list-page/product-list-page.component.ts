@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { NgFor } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { Product } from '../../interfaces/product';
 
@@ -7,15 +8,66 @@ import { Product } from '../../interfaces/product';
 @Component({
   selector: 'app-product-list-page',
   standalone: true,
-  imports: [NgFor],
+  imports: [NgFor, FormsModule, NgIf],
   templateUrl: './product-list-page.component.html',
   styleUrl: './product-list-page.component.css'
 })
 export class ProductListPageComponent implements OnInit {
-    private apiService = inject(ApiService);
+  private apiService = inject(ApiService);
   productList: Product[] = [];
 
   ngOnInit(): void {
-    this.apiService.getData().subscribe(res => this.productList = res);
+    this.apiService.getData().subscribe(res => {
+      this.productList = res.map(product => ({
+        ...product,
+        amountToAddToCart: 0,
+        amountInCart: 0
+      }));
+    });
   }
+
+  increaseAmount(product: Product) {
+    if (product.amountToAddToCart < product.availableAmount) product.amountToAddToCart++;
+  }
+
+  decreaseAmount(product: Product) {
+    if (product.amountToAddToCart > 0) product.amountToAddToCart--;
+  }
+
+  updateInCartAmount(product: Product, event: Event) {
+    const input = event.target as HTMLInputElement;
+    let value = input.valueAsNumber;
+
+    if (isNaN(value) || value < 0) {
+      value = 0;
+    } else if (value > product.availableAmount) {
+      value = product.availableAmount;
+    }
+
+    product.amountInCart = value;
+    input.value = String(value);
+  }
+
+  addToCart(product: Product) {
+    product.amountInCart += product.amountToAddToCart;
+    //check if amount in cart and current amount is less or equal to 
+    // available amount and if true set is in cart flag
+    //else drop error message: not enough available product
+    //check if number is not lesser than minumum amount. if it is
+    //give error: the minimum amount of the product is x
+  }
+  removeFromCart(product: Product) {
+    product.amountInCart = 0;
+    product.amountToAddToCart = 0;
+  }
+  goToCart() {
+    //navigate to cart view
+  }
+  openModal() {
+    //open product info mondal window
+  }
+
+  // Check if item is in cart, if true check amount in cart. 
+  // Limit number to available amount. 
+  // Save in cart data and pass to cart view.
 }
