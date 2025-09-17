@@ -1,13 +1,15 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { CartService } from '../../services/cart.service';
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { Product } from '../../interfaces/product';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [NgFor, NgIf, FormsModule],
+  imports: [NgFor, NgIf, FormsModule, RouterModule, CommonModule],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.css'
 })
@@ -60,5 +62,12 @@ export class CartComponent {
     product.amountInCart = 0;
     this.cartService.updateProduct(product);
   }
+
+  get cartTotal(): number {
+  return this.cartList.reduce(
+    (sum, product) => sum + product.price * product.amountInCart,
+    0
+  );
+}
 
 }

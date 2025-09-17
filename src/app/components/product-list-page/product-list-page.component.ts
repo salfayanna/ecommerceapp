@@ -21,25 +21,28 @@ export class ProductListPageComponent implements OnInit {
   constructor(private cartService: CartService) { }
 
   ngOnInit(): void {
-  if (!this.cartService.productsValue.length) {
-    this.apiService.getData().subscribe(res => {
-      const products = res.map(product => ({ ...product, amountInCart: 0 }));
-      this.cartService.setProducts(products);
-      this.productList = products;
-    });
-  } else {
-    this.cartService.products$.subscribe(products => {
-      this.productList = products;
-    });
+    if (!this.cartService.productsValue.length) {
+      this.apiService.getData().subscribe(res => {
+        const products = res.map(product => ({ ...product, amountInCart: 0 }));
+        this.cartService.setProducts(products);
+        this.productList = products;
+      });
+    } else {
+      this.cartService.products$.subscribe(products => {
+        this.productList = products;
+      });
+    }
   }
-}
-
-//check for duplicated item
 
   increaseAmount(product: Product) {
     if (product.amountInCart < product.availableAmount) {
-      product.amountInCart++;
-      product.availableAmount--;
+      if (product.amountInCart < product.minOrderAmount) {
+        product.availableAmount -= product.amountInCart;
+        product.amountInCart += product.minOrderAmount;
+      } else {
+        product.amountInCart++;
+        product.availableAmount--;
+      }
       this.cartService.updateProduct(product);
     }
 
@@ -47,8 +50,14 @@ export class ProductListPageComponent implements OnInit {
 
   decreaseAmount(product: Product) {
     if (product.amountInCart > 0) {
-      product.amountInCart--;
-      product.availableAmount++;
+      if (product.amountInCart === product.minOrderAmount) {
+        product.availableAmount += product.amountInCart;
+        product.amountInCart = 0;
+
+      } else {
+        product.amountInCart--;
+        product.availableAmount++;
+      }
       this.cartService.updateProduct(product);
     }
   }
@@ -57,13 +66,22 @@ export class ProductListPageComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     let value = input.valueAsNumber;
 
+    // Minimum is 0
     if (isNaN(value) || value < 0) {
       value = 0;
-    } else if (value > product.availableAmount) {
-      value = product.availableAmount;
     }
 
+    // Maximum is availableAmount + current amountInCart
+    const max = product.availableAmount + product.amountInCart;
+    if (value > max) {
+      value = max;
+    }
+
+    // Update cart and availableAmount accordingly
+    const difference = value - product.amountInCart;
     product.amountInCart = value;
+    product.availableAmount -= difference;
+
     input.value = String(value);
 
     this.cartService.updateProduct(product);

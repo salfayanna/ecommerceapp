@@ -1,23 +1,38 @@
-<h2>Cart Items</h2>
+<button class="button" [routerLink]="['']">
+    <i class="fa fa-arrow-left"></i> Go back to list
+</button>
 
 <ul>
-    <li *ngFor="let product of cartList">
-        <div>
-            <span>
-                <img src={{product.img}}>
-                <p>{{ product.name }}</p>
-                <p>{{product.price}}</p>
-                <button (click)="decreaseAmount(product)">-</button>
+    <li *ngFor="let product of cartList" class="cart-card">
+        <div class="cart-item">
+            <img [src]="product.img">
+            <p class="product-name">{{ product.name }}</p>
+            <div class="quantity-controls">
+                <button class="button" (click)="decreaseAmount(product)">-</button>
                 <input type="number" [(ngModel)]="product.amountInCart" (change)="updateInCartAmount(product, $event)"
                     [min]="0" [max]="product.availableAmount + product.amountInCart">
-                <button (click)="increaseAmount(product)">+</button>
-                <button [disabled]="product.amountInCart == 0" (click)="removeFromCart(product)">X</button>
-                <p>{{product.price }}* {{product.amountInCart}}</p>
-            </span>
+                <button class="button" (click)="increaseAmount(product)">+</button>
+            </div>
+            <p class="product-total" style="margin:0; display:flex; align-items:center; justify-content:center;">
+                {{ product.price * product.amountInCart | number:'1.2-2' }} €
+            </p>
+            <button class="trash-button" style="display:flex; align-items:center; justify-content:center; margin:0;"
+                (click)="removeFromCart(product)">
+                <i class="fa fa-trash"></i>
+            </button>
         </div>
     </li>
+    <div class="total-card" *ngIf="cartList.length > 0">
+        <div class="cart-item">
+            <h2 class="total-label" style="margin:0; display:flex; align-items:center;">Total:</h2>
+            <p class="product-total" style="margin:0; display:flex; align-items:center; justify-content:center;">
+                {{ cartTotal | number:'1.2-2' }} €
+            </p>
+            <div class="empty-trash-placeholder"></div>
+        </div>
+    </div>
 </ul>
 
-<p *ngIf="cartList.length === 0">Your cart is empty</p>
-
-<!-- add button to navigate back -->
+<p class="empty-cart-message" *ngIf="cartList.length == 0">
+    Your cart is empty
+</p>
