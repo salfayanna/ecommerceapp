@@ -6,14 +6,11 @@
             <p>{{ product.price }}</p>
             <span>
                 <button (click)="decreaseAmount(product)">-</button>
-                <input type="number" [(ngModel)]="product.amountToAddToCart"
-                    (change)="updateInCartAmount(product, $event)" [min]="0" [max]="product.availableAmount">
+                <input type="number" [(ngModel)]="product.amountInCart"
+                    (change)="updateInCartAmount(product, $event)" [min]="0" [max]="product.availableAmount + product.amountInCart">
                 <button (click)="increaseAmount(product)">+</button>
                 <button [disabled]="product.amountInCart == 0" (click)="removeFromCart(product)">X</button>
             </span>
-            <br>
-            <button *ngIf="product.amountInCart == 0" (click)="addToCart(product)" style="background:red;color:white;">Add to cart</button>
-            <button *ngIf="product.amountInCart > 0" (click)="addToCart(product)" style="background:red;color:white;">Refresh cart</button>
         </div>
     </div>
 </div>

@@ -20,18 +20,24 @@ export class ProductListPageComponent implements OnInit {
     this.apiService.getData().subscribe(res => {
       this.productList = res.map(product => ({
         ...product,
-        amountToAddToCart: 0,
         amountInCart: 0
       }));
     });
   }
 
   increaseAmount(product: Product) {
-    if (product.amountToAddToCart < product.availableAmount) product.amountToAddToCart++;
+    if (product.amountInCart < product.availableAmount) {
+      product.amountInCart++;
+      product.availableAmount--;
+    }
+
   }
 
   decreaseAmount(product: Product) {
-    if (product.amountToAddToCart > 0) product.amountToAddToCart--;
+    if (product.amountInCart > 0) {
+      product.amountInCart--;
+      product.availableAmount++;
+    }
   }
 
   updateInCartAmount(product: Product, event: Event) {
@@ -48,17 +54,8 @@ export class ProductListPageComponent implements OnInit {
     input.value = String(value);
   }
 
-  addToCart(product: Product) {
-    product.amountInCart += product.amountToAddToCart;
-    //check if amount in cart and current amount is less or equal to 
-    // available amount and if true set is in cart flag
-    //else drop error message: not enough available product
-    //check if number is not lesser than minumum amount. if it is
-    //give error: the minimum amount of the product is x
-  }
   removeFromCart(product: Product) {
     product.amountInCart = 0;
-    product.amountToAddToCart = 0;
   }
   goToCart() {
     //navigate to cart view

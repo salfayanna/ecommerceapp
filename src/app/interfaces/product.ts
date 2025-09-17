@@ -5,6 +5,5 @@ export interface Product {
     availableAmount: number;
     minOrderAmount: number;
     price: number;
-    amountToAddToCart: number;
     amountInCart: number;
 }
