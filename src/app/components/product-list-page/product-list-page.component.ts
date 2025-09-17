@@ -2,13 +2,14 @@ import { Component, inject, OnInit } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
+import { RouterModule  } from '@angular/router';
 import { Product } from '../../interfaces/product';
 
 
 @Component({
   selector: 'app-product-list-page',
   standalone: true,
-  imports: [NgFor, FormsModule, NgIf],
+  imports: [NgFor, FormsModule, NgIf, RouterModule],
   templateUrl: './product-list-page.component.html',
   styleUrl: './product-list-page.component.css'
 })
@@ -57,12 +58,10 @@ export class ProductListPageComponent implements OnInit {
   removeFromCart(product: Product) {
     product.amountInCart = 0;
   }
-  goToCart() {
-    //navigate to cart view
-  }
-  openModal() {
-    //open product info mondal window
-  }
+
+  // openModal() {
+    // //open product info mondal window
+  // }
 
   // Check if item is in cart, if true check amount in cart. 
   // Limit number to available amount. 
