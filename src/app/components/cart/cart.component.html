@@ -1,1 +1,23 @@
-<p>cart works!</p>
+<h2>Cart Items</h2>
+
+<ul>
+    <li *ngFor="let product of cartList">
+        <div>
+            <span>
+                <img src={{product.img}}>
+                <p>{{ product.name }}</p>
+                <p>{{product.price}}</p>
+                <button (click)="decreaseAmount(product)">-</button>
+                <input type="number" [(ngModel)]="product.amountInCart" (change)="updateInCartAmount(product, $event)"
+                    [min]="0" [max]="product.availableAmount + product.amountInCart">
+                <button (click)="increaseAmount(product)">+</button>
+                <button [disabled]="product.amountInCart == 0" (click)="removeFromCart(product)">X</button>
+                <p>{{product.price }}* {{product.amountInCart}}</p>
+            </span>
+        </div>
+    </li>
+</ul>
+
+<p *ngIf="cartList.length === 0">Your cart is empty</p>
+
+<!-- add button to navigate back -->

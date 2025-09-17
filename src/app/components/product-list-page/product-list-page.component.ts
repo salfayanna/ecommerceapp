@@ -2,8 +2,9 @@ import { Component, inject, OnInit } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
-import { RouterModule  } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { Product } from '../../interfaces/product';
+import { CartService } from '../../services/cart.service';
 
 
 @Component({
@@ -17,19 +18,29 @@ export class ProductListPageComponent implements OnInit {
   private apiService = inject(ApiService);
   productList: Product[] = [];
 
+  constructor(private cartService: CartService) { }
+
   ngOnInit(): void {
+  if (!this.cartService.productsValue.length) {
     this.apiService.getData().subscribe(res => {
-      this.productList = res.map(product => ({
-        ...product,
-        amountInCart: 0
-      }));
+      const products = res.map(product => ({ ...product, amountInCart: 0 }));
+      this.cartService.setProducts(products);
+      this.productList = products;
+    });
+  } else {
+    this.cartService.products$.subscribe(products => {
+      this.productList = products;
     });
   }
+}
+
+//check for duplicated item
 
   increaseAmount(product: Product) {
     if (product.amountInCart < product.availableAmount) {
       product.amountInCart++;
       product.availableAmount--;
+      this.cartService.updateProduct(product);
     }
 
   }
@@ -38,6 +49,7 @@ export class ProductListPageComponent implements OnInit {
     if (product.amountInCart > 0) {
       product.amountInCart--;
       product.availableAmount++;
+      this.cartService.updateProduct(product);
     }
   }
 
@@ -53,17 +65,12 @@ export class ProductListPageComponent implements OnInit {
 
     product.amountInCart = value;
     input.value = String(value);
+
+    this.cartService.updateProduct(product);
   }
 
   removeFromCart(product: Product) {
     product.amountInCart = 0;
+    this.cartService.updateProduct(product);
   }
-
-  // openModal() {
-    // //open product info mondal window
-  // }
-
-  // Check if item is in cart, if true check amount in cart. 
-  // Limit number to available amount. 
-  // Save in cart data and pass to cart view.
 }
