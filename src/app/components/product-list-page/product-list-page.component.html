@@ -14,16 +14,24 @@
                 <p>{{ product.name | titlecase }}</p>
                 <p>{{ product.price }} €</p>
             </div>
+
             <span>
                 <button class="button" (click)="decreaseAmount(product)">-</button>
                 <input type="number" [ngModel]="product.amountInCart"
-                    (ngModelChange)="updateInCartAmount(product, $event)" [min]="0"
-                    [max]="product.availableAmount + product.amountInCart">
-                <button class="button" (click)="increaseAmount(product)">+</button>
+                       (ngModelChange)="updateInCartAmount(product, $event)"
+                       [min]="0" [max]="product.availableAmount + product.amountInCart">
+                <button class="button"
+                        (mouseenter)="showHoverMessage(product)"
+                        (mouseleave)="hideHoverMessage(product)"
+                        (click)="increaseAmount(product)">+</button>
                 <button class="trash-button" [disabled]="product.amountInCart === 0" (click)="removeFromCart(product)">
                     <i class="fas fa-trash"></i>
                 </button>
             </span>
+
+            <p class="hover-message" [class.visible]="hoverMessages[product.uid!]">
+                *The minimum amount to order: {{ product.minOrderAmount }}.
+            </p>
         </div>
     </div>
 </div>

@@ -16,6 +16,8 @@ export class ProductListPageComponent implements OnInit {
   private cartService = inject(CartService);
   products$ = this.cartService.products$;
 
+  hoverMessages: { [key: string]: boolean } = {};
+
   ngOnInit(): void {
     this.cartService.fetchProducts().subscribe();
   }
@@ -37,6 +39,16 @@ export class ProductListPageComponent implements OnInit {
   }
 
   trackByUid(index: number, product: Product) {
-    return product.uid;
+    return product.uid!;
+  }
+
+  showHoverMessage(product: Product) {
+    if (product.amountInCart === 0 && product.minOrderAmount > 1) {
+      this.hoverMessages[product.uid!] = true;
+    }
+  }
+
+  hideHoverMessage(product: Product) {
+    this.hoverMessages[product.uid!] = false;
   }
 }
