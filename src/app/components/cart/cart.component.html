@@ -5,8 +5,12 @@
 <ul>
     <li *ngFor="let product of cartList" class="cart-card">
         <div class="cart-item">
-            <img [src]="product.img">
-            <p class="product-name">{{ product.name }}</p>
+            <div class="image-container">
+                <img #productImage [src]="product.img" alt="{{ product.name }}"
+                    (error)="productImage.style.display='none'; placeholder.style.display='flex'">
+                <i #placeholder class="fas fa-ban image-placeholder"></i>
+            </div>
+            <p class="product-name">{{ product.name | titlecase }}</p>
             <div class="quantity-controls">
                 <button class="button" (click)="decreaseAmount(product)">-</button>
                 <input type="number" [(ngModel)]="product.amountInCart" (change)="updateInCartAmount(product, $event)"

@@ -6,4 +6,5 @@ export interface Product {
     minOrderAmount: number;
     price: number;
     amountInCart: number;
+    uid?: string;
 }

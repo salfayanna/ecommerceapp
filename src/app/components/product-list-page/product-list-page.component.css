@@ -1,13 +1,33 @@
+/* Wrap for both product image and placeholder icon */
+.card .image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px; /* same as image height */
+    width: 100%;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+/* Ensure images scale properly within the container */
 .card img {
     display: block;
-    margin: 0 auto;
     max-width: 150px;
-    max-height: 100px;
+    max-height: 100%;
     width: auto;
-    height: 100px;
+    height: auto;
     object-fit: contain;
 }
 
+/* Style placeholder icon to match image position and size */
+.card .image-placeholder {
+    font-size: 48px; /* roughly the same visual weight as image */
+    color: #ccc;
+    text-align: center;
+    line-height: 1;
+}
+
+/* Card container */
 .card-container {
     display: flex;
     flex-wrap: wrap;
@@ -16,6 +36,7 @@
     justify-content: flex-start;
 }
 
+/* Card itself */
 .card {
     width: 200px;
     height: 250px;
@@ -50,12 +71,7 @@
     margin: 0.5rem 0;
 }
 
-.card .product-name,
-.card .product-price {
-    text-align: center;
-    margin: 0.5rem 0;
-}
-
+/* Remove number spinners */
 input[type=number]::-webkit-outer-spin-button,
 input[type=number]::-webkit-inner-spin-button {
     -webkit-appearance: none;

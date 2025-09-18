@@ -1,20 +1,28 @@
-<button class="button" [routerLink]="['/cart']">Go to Cart <i class="fas fa-cart-shopping"></i></button>
+<button class="button" [routerLink]="['/cart']">
+    Go to Cart <i class="fas fa-cart-shopping"></i>
+</button>
 
-<div class="card-container">
-    <div *ngFor="let product of productList; index as i">
+<div class="card-container" *ngIf="products$ | async as productList">
+    <div *ngFor="let product of productList; trackBy: trackByUid">
         <div class="card">
             <div>
-                <img src={{product.img}}>
-                <p>{{ product.name }}</p>
+                <div class="image-container">
+                    <img #productImage [src]="product.img" alt="{{ product.name }}"
+                        (error)="productImage.style.display='none'; icon.style.display='flex'">
+                    <i #icon class="fas fa-ban image-placeholder" style="display:none;"></i>
+                </div>
+                <p>{{ product.name | titlecase }}</p>
                 <p>{{ product.price }} €</p>
             </div>
             <span>
                 <button class="button" (click)="decreaseAmount(product)">-</button>
-                <input type="number" [value]="product.amountInCart" (change)="updateInCartAmount(product, $event)"
-                    [min]="0" [max]="product.availableAmount + product.amountInCart">
+                <input type="number" [ngModel]="product.amountInCart"
+                    (ngModelChange)="updateInCartAmount(product, $event)" [min]="0"
+                    [max]="product.availableAmount + product.amountInCart">
                 <button class="button" (click)="increaseAmount(product)">+</button>
-                <button class="trash-button" [disabled]="product.amountInCart == 0" (click)="removeFromCart(product)"><i
-                        class="fas fa-trash"></i></button>
+                <button class="trash-button" [disabled]="product.amountInCart === 0" (click)="removeFromCart(product)">
+                    <i class="fas fa-trash"></i>
+                </button>
             </span>
         </div>
     </div>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CartService } from '../../services/cart.service';
 import { NgFor, NgIf } from '@angular/common';
@@ -13,61 +13,39 @@ import { Product } from '../../interfaces/product';
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.css'
 })
-export class CartComponent {
+export class CartComponent implements OnInit {
 
   cartList: Product[] = [];
-
-  constructor(private cartService: CartService) { }
+  private cartService = inject(CartService);
 
   ngOnInit() {
     this.cartService.products$.subscribe(products => {
-    this.cartList = products.filter(product => product.amountInCart > 0);
-  });
+      this.cartList = products.filter(product => product.amountInCart > 0);
+    });
   }
 
   increaseAmount(product: Product) {
-    if (product.amountInCart < product.availableAmount) {
-      product.amountInCart++;
-      product.availableAmount--;
-      this.cartService.updateProduct(product);
-    }
-
+    this.cartService.increaseAmount(product);
   }
 
   decreaseAmount(product: Product) {
-    if (product.amountInCart > 0) {
-      product.amountInCart--;
-      product.availableAmount++;
-      this.cartService.updateProduct(product);
-    }
+    this.cartService.decreaseAmount(product);
   }
 
   updateInCartAmount(product: Product, event: Event) {
     const input = event.target as HTMLInputElement;
-    let value = input.valueAsNumber;
-
-    if (isNaN(value) || value < 0) {
-      value = 0;
-    } else if (value > product.availableAmount) {
-      value = product.availableAmount;
-    }
-
-    product.amountInCart = value;
-    input.value = String(value);
-
-    this.cartService.updateProduct(product);
+    this.cartService.updateInCartAmount(product, input.valueAsNumber);
+    input.value = String(product.amountInCart);
   }
 
   removeFromCart(product: Product) {
-    product.amountInCart = 0;
-    this.cartService.updateProduct(product);
+    this.cartService.removeFromCart(product);
   }
 
   get cartTotal(): number {
-  return this.cartList.reduce(
-    (sum, product) => sum + product.price * product.amountInCart,
-    0
-  );
-}
-
+    return this.cartList.reduce(
+      (sum, product) => sum + product.price * product.amountInCart,
+      0
+    );
+  }
 }
