@@ -87,24 +87,28 @@ fetchProducts(): Observable<Product[]> {
   updateInCartAmount(product: Product, event: Event) {
     const input = event.target as HTMLInputElement;
     const value = input.value;
-    let finalvalue = 0;
+    let finalValue = 0;
 
-      const parsed = parseInt(value);
-      finalvalue = isNaN(parsed) ? 0 : parsed
+    const parsed = parseInt(value);
+    finalValue = isNaN(parsed) ? 0 : parsed;
 
     const max = product.amountInCart + product.availableAmount;
-    if (finalvalue > max) {
-      finalvalue = max;
+    if (finalValue > max) {
+      finalValue = max;
       this.showMessageTimeout(product.uid!);
+    }
+
+    if (finalValue < product.minOrderAmount) {
+      finalValue = 0;
     }
 
     const updated: Product = {
       ...product,
-      amountInCart: finalvalue,
-      availableAmount: max - finalvalue
+      amountInCart: finalValue,
+      availableAmount: max - finalValue
     };
     this.updateProduct(updated);
-    input.value = String(finalvalue);
+    input.value = String(finalValue);
   }
 
   removeFromCart(product: Product) {
