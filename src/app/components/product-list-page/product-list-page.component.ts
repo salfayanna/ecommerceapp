@@ -15,16 +15,17 @@ import { Subscription } from 'rxjs';
 export class ProductListPageComponent implements OnInit {
   private cartService = inject(CartService);
   products$ = this.cartService.products$;
-  private sub!: Subscription;
+  private sub = new Subscription();
 
   minOrderMessageId: string = '';
   maxAmountMessageId: string = '';
 
   ngOnInit(): void {
-    this.cartService.fetchProducts().subscribe();
-    this.sub = this.cartService.messageUid$.subscribe(uid => {
+    this.sub.add(this.cartService.fetchProducts().subscribe());
+    
+    this.sub.add(this.cartService.messageUid$.subscribe(uid => {
       this.maxAmountMessageId = uid;
-    });
+    }));
   }
 
   increaseAmount(product: Product) {

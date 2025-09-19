@@ -18,18 +18,19 @@ export class CartComponent implements OnInit {
 
   cartList: Product[] = [];
   private cartService = inject(CartService);
-  private sub!: Subscription;
+  private sub = new Subscription();
 
   minOrderMessageId: string = '';
   maxAmountMessageId: string = '';
 
   ngOnInit() {
-    this.cartService.products$.subscribe(products => {
+    this.sub.add(this.cartService.products$.subscribe(products => {
       this.cartList = products.filter(product => product.amountInCart > 0);
-    });
-    this.sub = this.cartService.messageUid$.subscribe(uid => {
+    }));
+    
+    this.sub.add(this.cartService.messageUid$.subscribe(uid => {
       this.maxAmountMessageId = uid;
-    });
+    }));
   }
 
   increaseAmount(product: Product) {

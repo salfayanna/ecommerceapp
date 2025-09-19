@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Product } from '../interfaces/product';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { ApiService } from './api.service';
 
 @Injectable({ providedIn: 'root' })
@@ -21,31 +21,30 @@ export class CartService {
     this._products.next(products);
   }
 
-  fetchProducts(): Observable<Product[]> {
-    if (this.productsValue.length) return of(this.productsValue);
 
-    return this.apiService.getData().pipe(
-      tap(res => {
-        const merged: Product[] = res.map((apiProduct, index) => {
-          return {
-            ...apiProduct,
-            uid: `${apiProduct.id}-${index}`,
-            amountInCart: 0,
-            availableAmount: apiProduct.availableAmount ?? 0,
-            minOrderAmount: apiProduct.minOrderAmount ?? 1
-          };
-        });
-        this.setProducts(merged);
-      })
-    );
-  }
+fetchProducts(): Observable<Product[]> {
+  if (this.productsValue.length) return of(this.productsValue);
+
+  return this.apiService.getData().pipe(
+    map(res => {
+      const merged: Product[] = res.map((apiProduct, index) => ({
+        ...apiProduct,
+        uid: `${apiProduct.id}-${index}`,
+        amountInCart: 0,
+        availableAmount: apiProduct.availableAmount ?? 0,
+        minOrderAmount: apiProduct.minOrderAmount ?? 1
+      }));
+      this.setProducts(merged);
+      return merged; // <-- emit merged array
+    })
+  );
+}
 
 
   updateProduct(updated: Product) {
     const newProducts = this.productsValue.map(p =>
       p.uid === updated.uid ? updated : p
     );
-    // console.log(newProducts)
     this._products.next(newProducts);
   }
 
