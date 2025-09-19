@@ -34,7 +34,7 @@ export class CartComponent implements OnInit {
 
   updateInCartAmount(product: Product, event: Event) {
     const input = event.target as HTMLInputElement;
-    this.cartService.updateInCartAmount(product, input.valueAsNumber);
+    this.cartService.updateInCartAmount(product, event);
     input.value = String(product.amountInCart);
   }
 

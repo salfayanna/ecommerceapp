@@ -1,6 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Product } from '../../interfaces/product';
 import { CartService } from '../../services/cart.service';
@@ -8,7 +7,7 @@ import { CartService } from '../../services/cart.service';
 @Component({
   selector: 'app-product-list-page',
   standalone: true,
-  imports: [CommonModule, NgFor, NgIf, FormsModule, RouterModule],
+  imports: [CommonModule, NgFor, NgIf, RouterModule],
   templateUrl: './product-list-page.component.html',
   styleUrl: './product-list-page.component.css'
 })
@@ -30,8 +29,8 @@ export class ProductListPageComponent implements OnInit {
     this.cartService.decreaseAmount(product);
   }
 
-  updateInCartAmount(product: Product, value: number) {
-    this.cartService.updateInCartAmount(product, value);
+  updateInCartAmount(product: Product, event: Event) {
+    this.cartService.updateInCartAmount(product, event);
   }
 
   removeFromCart(product: Product) {

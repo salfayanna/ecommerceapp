@@ -9,7 +9,7 @@ export class CartService {
   private _products = new BehaviorSubject<Product[]>([]);
   products$ = this._products.asObservable();
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService) { }
 
   get productsValue(): Product[] {
     return this._products.value;
@@ -19,7 +19,6 @@ export class CartService {
     this._products.next(products);
   }
 
-  /** Fetch products once; assign unique uid to each product */
   fetchProducts(): Observable<Product[]> {
     if (this.productsValue.length) return of(this.productsValue);
 
@@ -28,7 +27,7 @@ export class CartService {
         const merged: Product[] = res.map((apiProduct, index) => {
           return {
             ...apiProduct,
-            uid: `${apiProduct.id}-${index}`, // unique key
+            uid: `${apiProduct.id}-${index}`,
             amountInCart: 0,
             availableAmount: apiProduct.availableAmount ?? 0,
             minOrderAmount: apiProduct.minOrderAmount ?? 1
@@ -39,64 +38,73 @@ export class CartService {
     );
   }
 
-  /** Update a product immutably using uid */
+
   updateProduct(updated: Product) {
     const newProducts = this.productsValue.map(p =>
       p.uid === updated.uid ? updated : p
     );
+    // console.log(newProducts)
     this._products.next(newProducts);
   }
 
-  /** Increase amount in cart */
   increaseAmount(product: Product) {
-    if (product.amountInCart < product.amountInCart + product.availableAmount) {
-      const maxIncrement = Math.min(product.minOrderAmount, product.availableAmount);
-      const increment = product.amountInCart < product.minOrderAmount ? maxIncrement : 1;
-
-      const updated: Product = {
-        ...product,
-        amountInCart: product.amountInCart + increment,
-        availableAmount: product.availableAmount - increment
-      };
-      this.updateProduct(updated);
+    let increment = 0;
+    if (product.amountInCart >= product.minOrderAmount) {
+      increment = 1;
+    } else {
+      increment = product.minOrderAmount - product.amountInCart
     }
-  }
-
-  /** Decrease amount in cart */
-  decreaseAmount(product: Product) {
-    if (product.amountInCart > 0) {
-      const decrement = product.amountInCart <= product.minOrderAmount ? product.amountInCart : 1;
-      const updated: Product = {
-        ...product,
-        amountInCart: product.amountInCart - decrement,
-        availableAmount: product.availableAmount + decrement
-      };
-      this.updateProduct(updated);
-    }
-  }
-
-  /** Update amount from input */
-  updateInCartAmount(product: Product, value: number) {
-    if (isNaN(value) || value < 0) value = 0;
-
-    const max = product.amountInCart + product.availableAmount;
-    if (value > max) value = max;
-
-    const diff = value - product.amountInCart;
     const updated: Product = {
       ...product,
-      amountInCart: value,
-      availableAmount: product.availableAmount - diff
+      amountInCart: product.amountInCart + increment,
+      availableAmount: product.availableAmount - increment
     };
     this.updateProduct(updated);
   }
 
-  /** Remove product from cart */
+  decreaseAmount(product: Product) {
+    let decrement = 0;
+    if (product.amountInCart > product.minOrderAmount) {
+      decrement = 1;
+    } else {
+      decrement = product.amountInCart
+    }
+    const updated: Product = {
+      ...product,
+      amountInCart: product.amountInCart - decrement,
+      availableAmount: product.availableAmount + decrement
+    };
+    this.updateProduct(updated);
+  }
+
+  updateInCartAmount(product: Product, event: Event) {
+    const input = event.target as HTMLInputElement;
+    const value = input.value;
+    let finalvalue = 0;
+
+      const parsed = parseInt(value);
+      finalvalue = isNaN(parsed) ? 0 : parsed
+
+    const max = product.amountInCart + product.availableAmount;
+    if (finalvalue > max) {
+      finalvalue = max;
+    }
+
+    const updated: Product = {
+      ...product,
+      amountInCart: finalvalue,
+      availableAmount: max - finalvalue
+    };
+    this.updateProduct(updated);
+    input.value = String(finalvalue);
+  }
+
   removeFromCart(product: Product) {
+    const max = product.amountInCart + product.availableAmount
     const updated: Product = {
       ...product,
       amountInCart: 0,
-      availableAmount: product.amountInCart + product.availableAmount
+      availableAmount: max
     };
     this.updateProduct(updated);
   }
