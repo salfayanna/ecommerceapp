@@ -8,6 +8,8 @@ import { ApiService } from './api.service';
 export class CartService {
   private _products = new BehaviorSubject<Product[]>([]);
   products$ = this._products.asObservable();
+  private messageSubject = new BehaviorSubject<string>('');
+  messageUid$ = this.messageSubject.asObservable();
 
   constructor(private apiService: ApiService) { }
 
@@ -49,11 +51,16 @@ export class CartService {
 
   increaseAmount(product: Product) {
     let increment = 0;
+    if (product.availableAmount == 0) {
+      return;
+    }
+
     if (product.amountInCart >= product.minOrderAmount) {
       increment = 1;
     } else {
       increment = product.minOrderAmount - product.amountInCart
     }
+
     const updated: Product = {
       ...product,
       amountInCart: product.amountInCart + increment,
@@ -69,6 +76,7 @@ export class CartService {
     } else {
       decrement = product.amountInCart
     }
+
     const updated: Product = {
       ...product,
       amountInCart: product.amountInCart - decrement,
@@ -88,6 +96,7 @@ export class CartService {
     const max = product.amountInCart + product.availableAmount;
     if (finalvalue > max) {
       finalvalue = max;
+      this.showMessageTimeout(product.uid!);
     }
 
     const updated: Product = {
@@ -107,5 +116,13 @@ export class CartService {
       availableAmount: max
     };
     this.updateProduct(updated);
+  }
+
+  private showMessageTimeout(uid: string, duration = 3000) {
+    this.messageSubject.next(uid);
+
+    setTimeout(() => {
+      this.messageSubject.next('');
+    }, duration);
   }
 }

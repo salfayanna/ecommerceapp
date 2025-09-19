@@ -3,6 +3,7 @@ import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Product } from '../../interfaces/product';
 import { CartService } from '../../services/cart.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-product-list-page',
@@ -14,11 +15,16 @@ import { CartService } from '../../services/cart.service';
 export class ProductListPageComponent implements OnInit {
   private cartService = inject(CartService);
   products$ = this.cartService.products$;
+  private sub!: Subscription;
 
-  hoverMessages: { [key: string]: boolean } = {};
+  minOrderMessageId: string = '';
+  maxAmountMessageId: string = '';
 
   ngOnInit(): void {
     this.cartService.fetchProducts().subscribe();
+    this.sub = this.cartService.messageUid$.subscribe(uid => {
+      this.maxAmountMessageId = uid;
+    });
   }
 
   increaseAmount(product: Product) {
@@ -41,13 +47,17 @@ export class ProductListPageComponent implements OnInit {
     return product.uid!;
   }
 
-  showHoverMessage(product: Product) {
-    if (product.amountInCart === 0 && product.minOrderAmount > 1) {
-      this.hoverMessages[product.uid!] = true;
+  tryShowMinOrderMessage(product: Product) {
+    if (product.amountInCart < product.minOrderAmount && product.minOrderAmount > 1) {
+      this.minOrderMessageId = product.uid!;
     }
   }
 
-  hideHoverMessage(product: Product) {
-    this.hoverMessages[product.uid!] = false;
+  hideMinOrderMessage() {
+    this.minOrderMessageId = '';
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 }

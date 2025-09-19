@@ -20,17 +20,17 @@
                 <input type="number" [value]="product.amountInCart"
                     (keydown.enter)="updateInCartAmount(product, $event)" (blur)="updateInCartAmount(product, $event)"
                     [min]="0" [max]="product.availableAmount + product.amountInCart">
-                <button class="button" (mouseenter)="showHoverMessage(product)" (mouseleave)="hideHoverMessage(product)"
+                <button class="button" (mouseenter)="tryShowMinOrderMessage(product)" (mouseleave)="hideMinOrderMessage()"
                     (click)="increaseAmount(product)">+</button>
                 <button class="trash-button" [disabled]="product.amountInCart === 0" (click)="removeFromCart(product)">
                     <i class="fas fa-trash"></i>
                 </button>
             </span>
 
-            <p class="hover-message" [class.visible]="hoverMessages[product.uid!]">
+            <p class="min-order-error" [class.visible]="minOrderMessageId === product.uid!">
                 *The minimum amount to order: {{ product.minOrderAmount }}.
             </p>
-            <p class="hover-message max-error">
+            <p class="max-error" [class.visible]="maxAmountMessageId === product.uid!">
                 *The maximum available amount: {{ product.amountInCart + product.availableAmount }}.
             </p>
         </div>
