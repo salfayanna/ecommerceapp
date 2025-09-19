@@ -8,14 +8,23 @@
             <div class="image-container">
                 <img #productImage [src]="product.img" alt="{{ product.name }}"
                     (error)="productImage.style.display='none'; placeholder.style.display='flex'">
-                <i #placeholder class="fas fa-ban image-placeholder"></i>
+                <i #placeholder class="fa fa-image image-placeholder"></i>
             </div>
             <p class="product-name">{{ product.name | titlecase }}</p>
-            <div class="quantity-controls">
-                <button class="button" (click)="decreaseAmount(product)">-</button>
-                <input type="number" [(ngModel)]="product.amountInCart" (change)="updateInCartAmount(product, $event)"
-                    [min]="0" [max]="product.availableAmount + product.amountInCart">
-                <button class="button" (click)="increaseAmount(product)">+</button>
+            <div>
+                <div class="quantity-controls">
+                    <button class="button" (click)="decreaseAmount(product)">-</button>
+                    <input type="number" [value]="product.amountInCart"
+                        (keydown.enter)="updateInCartAmount(product, $event)"
+                        (blur)="updateInCartAmount(product, $event)" [min]="0"
+                        [max]="product.availableAmount + product.amountInCart">
+                    <button class="button" (click)="increaseAmount(product)">+</button>
+                </div>
+                <div>
+                    <p class="max-error" [class.visible]="maxAmountMessageId === product.uid!">
+                        *The maximum available amount: {{ product.amountInCart + product.availableAmount }}.
+                    </p>
+                </div>
             </div>
             <p class="product-total" style="margin:0; display:flex; align-items:center; justify-content:center;">
                 {{ product.price * product.amountInCart | number:'1.2-2' }} €

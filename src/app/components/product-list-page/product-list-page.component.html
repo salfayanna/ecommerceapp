@@ -9,7 +9,7 @@
                 <div class="image-container">
                     <img #productImage [src]="product.img" alt="{{ product.name }}"
                         (error)="productImage.style.display='none'; icon.style.display='flex'">
-                    <i #icon class="fas fa-ban image-placeholder" style="display:none;"></i>
+                    <i #icon class="fa fa-image image-placeholder" style="display:none;"></i>
                 </div>
                 <p>{{ product.name | titlecase }}</p>
                 <p>{{ product.price }} €</p>

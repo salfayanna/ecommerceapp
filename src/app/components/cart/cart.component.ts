@@ -5,6 +5,7 @@ import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Product } from '../../interfaces/product';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-cart',
@@ -17,10 +18,17 @@ export class CartComponent implements OnInit {
 
   cartList: Product[] = [];
   private cartService = inject(CartService);
+  private sub!: Subscription;
+
+  minOrderMessageId: string = '';
+  maxAmountMessageId: string = '';
 
   ngOnInit() {
     this.cartService.products$.subscribe(products => {
       this.cartList = products.filter(product => product.amountInCart > 0);
+    });
+    this.sub = this.cartService.messageUid$.subscribe(uid => {
+      this.maxAmountMessageId = uid;
     });
   }
 
@@ -33,9 +41,7 @@ export class CartComponent implements OnInit {
   }
 
   updateInCartAmount(product: Product, event: Event) {
-    const input = event.target as HTMLInputElement;
     this.cartService.updateInCartAmount(product, event);
-    input.value = String(product.amountInCart);
   }
 
   removeFromCart(product: Product) {
@@ -47,5 +53,19 @@ export class CartComponent implements OnInit {
       (sum, product) => sum + product.price * product.amountInCart,
       0
     );
+  }
+
+  tryShowMinOrderMessage(product: Product) {
+    if (product.amountInCart < product.minOrderAmount && product.minOrderAmount > 1) {
+      this.minOrderMessageId = product.uid!;
+    }
+  }
+
+  hideMinOrderMessage() {
+    this.minOrderMessageId = '';
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 }
