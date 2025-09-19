@@ -17,7 +17,8 @@ ul li {
 /* === CARD BASE === */
 .cart-card,
 .total-card {
-    width: 800px;
+    width: 100%;
+    max-width: 800px;
     min-height: 120px;
     background: linear-gradient(#e0eaff, #fff);
     border-radius: 12px;
@@ -35,7 +36,7 @@ ul li {
 /* === CONSISTENT GRID === */
 .cart-item {
     display: grid;
-    grid-template-columns: 100px 1fr 120px 120px 40px;
+    grid-template-columns: 10% 30% 15% 20% 25%;
     align-items: center;
     gap: 12px;
     min-height: 100px;
@@ -46,7 +47,7 @@ ul li {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100px; /* fixed height for alignment */
+    height: 100px;
     width: 100%;
     position: relative;
 }
@@ -69,6 +70,7 @@ ul li {
     color: #1e6fbf;
     font-weight: bold;
     margin: 0;
+    word-break: break-word;
 }
 
 .product-total {
@@ -76,6 +78,7 @@ ul li {
     font-weight: bold;
     text-align: right;
     margin: 0;
+    white-space: nowrap;
 }
 
 /* === QUANTITY CONTROLS === */
@@ -161,7 +164,7 @@ ul li {
 
 /* === TOTAL CARD === */
 .total-card .cart-item {
-    grid-template-columns: 100px 1fr 120px 120px 40px;
+    grid-template-columns: 100px 1fr 120px 80px 40px;
 }
 
 .total-card .total-label {
@@ -216,4 +219,82 @@ input[type=number]::-webkit-inner-spin-button {
 
 .max-error.visible {
     visibility: visible;
+}
+
+/* === RESPONSIVE LAYOUT === */
+@media (max-width: 900px) {
+    .cart-item {
+        grid-template-columns: 10% 30% 15% 20% 25%;
+        gap: 8px;
+    }
+
+    .cart-card,
+    .total-card {
+        padding: 8px;
+    }
+
+    .quantity-controls input[type="number"] {
+        width: 50px;
+        font-size: 14px;
+        padding: 4px;
+    }
+
+    .button {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+
+    .product-total {
+        font-size: 16px;
+    }
+
+    .total-card .total-label,
+    .total-card .product-total {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    .cart-item {
+        grid-template-columns: 8% 23% 24% 20% 25%;
+        gap: 6px;
+    }
+
+    .max-error {
+        font-size: 10px;
+        margin: 5px;
+    }
+
+    .cart-card,
+    .total-card {
+        min-height: auto;
+    }
+
+    .quantity-controls input[type="number"] {
+        width: 40px;
+        font-size: 12px;
+        padding: 3px;
+    }
+
+    .button {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+
+    .product-name {
+        font-size: 14px;
+    }
+
+    .product-total {
+        font-size: 14px;
+    }
+
+    .total-card .total-label,
+    .total-card .product-total {
+        font-size: 14px;
+    }
+
+    .image-container {
+        height: 80px;
+    }
 }

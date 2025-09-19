@@ -12,6 +12,11 @@
             </div>
             <p class="product-name">{{ product.name | titlecase }}</p>
             <div>
+                <p class="max-error" [class.visible]="maxAmountMessageId === product.uid!">
+                    *The maximum available amount: {{ product.amountInCart + product.availableAmount }}.
+                </p>
+            </div>
+            <div>
                 <div class="quantity-controls">
                     <button class="button" (click)="decreaseAmount(product)">-</button>
                     <input type="number" [value]="product.amountInCart"
@@ -19,20 +24,16 @@
                         (blur)="updateInCartAmount(product, $event)" [min]="0"
                         [max]="product.availableAmount + product.amountInCart">
                     <button class="button" (click)="increaseAmount(product)">+</button>
-                </div>
-                <div>
-                    <p class="max-error" [class.visible]="maxAmountMessageId === product.uid!">
-                        *The maximum available amount: {{ product.amountInCart + product.availableAmount }}.
-                    </p>
+                    <button class="trash-button"
+                        style="display:flex; align-items:center; justify-content:center; margin:0;"
+                        (click)="removeFromCart(product)">
+                        <i class="fa fa-trash"></i>
+                    </button>
                 </div>
             </div>
             <p class="product-total" style="margin:0; display:flex; align-items:center; justify-content:center;">
                 {{ product.price * product.amountInCart | number:'1.2-2' }} €
             </p>
-            <button class="trash-button" style="display:flex; align-items:center; justify-content:center; margin:0;"
-                (click)="removeFromCart(product)">
-                <i class="fa fa-trash"></i>
-            </button>
         </div>
     </li>
     <div class="total-card" *ngIf="cartList.length > 0">
