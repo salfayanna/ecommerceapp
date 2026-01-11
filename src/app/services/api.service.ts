@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 
 export class ApiService {
-  private readonly apiUrl = 'https://63c10327716562671870f959.mockapi.io/products';
+  private readonly apiUrl = 'https://696366452d146d9f58d35e7d.mockapi.io/products';
 
   constructor(private http: HttpClient) {}
 
