@@ -3,7 +3,7 @@
 </button>
 
 <ul>
-    <li *ngFor="let product of cartList" class="cart-card">
+    <li *ngFor="let product of cartList; trackBy: trackByUid" class="cart-card">
         <div class="cart-item">
             <div class="image-container">
                 <img #productImage [src]="product.img" alt="{{ product.name }}"

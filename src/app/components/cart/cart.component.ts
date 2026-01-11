@@ -51,6 +51,10 @@ export class CartComponent implements OnInit {
     this.cartService.removeFromCart(product);
   }
 
+  trackByUid(index: number, product: Product) {
+    return product.uid!;
+  }
+
   get cartTotal(): number {
     return this.cartList.reduce(
       (sum, product) => sum + product.price * product.amountInCart,
