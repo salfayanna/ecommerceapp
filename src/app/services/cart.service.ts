@@ -55,9 +55,9 @@ export class CartService {
             minOrderAmount: apiProduct.minOrderAmount ?? 1
           };
         });
-        this.setProducts(merged);
         return merged;
-      })
+      }),
+      tap(merged => this.setProducts(merged))
     );
   }
 
