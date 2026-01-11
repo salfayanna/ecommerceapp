@@ -109,8 +109,8 @@ export class CartService {
     const value = input.value;
     let finalValue = 0;
 
-    const parsed = parseInt(value);
-    finalValue = isNaN(parsed) ? 0 : parsed;
+    const parsed = parseInt(value, 10);
+    finalValue = isNaN(parsed) ? 0 : Math.max(0, parsed);
 
     const max = product.amountInCart + product.availableAmount;
     if (finalValue > max) {
