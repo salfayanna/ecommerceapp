@@ -56,16 +56,6 @@ export class CartComponent implements OnInit {
     );
   }
 
-  tryShowMinOrderMessage(product: Product) {
-    if (product.amountInCart < product.minOrderAmount && product.minOrderAmount > 1) {
-      this.minOrderMessageId = product.uid!;
-    }
-  }
-
-  hideMinOrderMessage() {
-    this.minOrderMessageId = '';
-  }
-
   ngOnDestroy() {
     this.sub.unsubscribe();
   }

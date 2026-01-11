@@ -18,12 +18,16 @@
             </div>
             <div>
                 <div class="quantity-controls">
-                    <button class="button" (click)="decreaseAmount(product)">-</button>
+                    <button class="button" (click)="decreaseAmount(product)">
+                        <i class="fa fa-minus"></i>
+                    </button>
                     <input type="number" [value]="product.amountInCart"
                         (keydown.enter)="updateInCartAmount(product, $event)"
                         (blur)="updateInCartAmount(product, $event)" [min]="0"
                         [max]="product.availableAmount + product.amountInCart">
-                    <button class="button" (click)="increaseAmount(product)">+</button>
+                    <button class="button" (click)="increaseAmount(product)">
+                        <i class="fa fa-plus"></i>
+                    </button>
                     <button class="trash-button"
                         style="display:flex; align-items:center; justify-content:center; margin:0;"
                         (click)="removeFromCart(product)">
