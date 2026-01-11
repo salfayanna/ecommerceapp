@@ -25,8 +25,8 @@ export class CartService {
 
   private saveCartState(products: Product[]) {
     const state = products
-        .filter(p => p.amountInCart > 0)
-        .map(p => ({ uid: p.uid, amountInCart: p.amountInCart }));
+      .filter(p => p.amountInCart > 0)
+      .map(p => ({ uid: p.uid, amountInCart: p.amountInCart }));
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(state));
   }
 
@@ -71,6 +71,7 @@ export class CartService {
   increaseAmount(product: Product) {
     let increment = 0;
     if (product.availableAmount == 0) {
+      this.showMessageTimeout(product.uid!);
       return;
     }
 
@@ -78,6 +79,11 @@ export class CartService {
       increment = 1;
     } else {
       increment = product.minOrderAmount - product.amountInCart
+    }
+
+    if (increment > product.availableAmount) {
+      increment = product.availableAmount;
+      this.showMessageTimeout(product.uid!);
     }
 
     const updated: Product = {
