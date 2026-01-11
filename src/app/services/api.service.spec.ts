@@ -53,7 +53,7 @@ describe('ApiService', () => {
       expect(products).toEqual(mockProducts);
     });
 
-    const req = httpMock.expectOne('https://63c10327716562671870f959.mockapi.io/products');
+    const req = httpMock.expectOne('https://696366452d146d9f58d35e7d.mockapi.io/products');
     expect(req.request.method).toBe('GET');
     req.flush(mockProducts);
   });
@@ -64,7 +64,7 @@ describe('ApiService', () => {
       expect(products).toEqual([]);
     });
 
-    const req = httpMock.expectOne('https://63c10327716562671870f959.mockapi.io/products');
+    const req = httpMock.expectOne('https://696366452d146d9f58d35e7d.mockapi.io/products');
     req.flush([]);
   });
 
@@ -76,7 +76,7 @@ describe('ApiService', () => {
       },
     });
 
-    const req = httpMock.expectOne('https://63c10327716562671870f959.mockapi.io/products');
+    const req = httpMock.expectOne('https://696366452d146d9f58d35e7d.mockapi.io/products');
     req.flush('Server error', { status: 500, statusText: 'Internal Server Error' });
   });
 });
