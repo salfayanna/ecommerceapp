@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Product } from '../interfaces/product';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 
 @Injectable({ providedIn: 'root' })
@@ -10,6 +10,7 @@ export class CartService {
   products$ = this._products.asObservable();
   private messageSubject = new BehaviorSubject<string>('');
   messageUid$ = this.messageSubject.asObservable();
+  private readonly STORAGE_KEY = 'cart_state';
 
   constructor(private apiService: ApiService) { }
 
@@ -19,33 +20,52 @@ export class CartService {
 
   setProducts(products: Product[]) {
     this._products.next(products);
+    this.saveCartState(products);
   }
 
+  private saveCartState(products: Product[]) {
+    const state = products
+        .filter(p => p.amountInCart > 0)
+        .map(p => ({ uid: p.uid, amountInCart: p.amountInCart }));
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(state));
+  }
 
-fetchProducts(): Observable<Product[]> {
-  if (this.productsValue.length) return of(this.productsValue);
+  private getCartState(): { uid: string, amountInCart: number }[] {
+    const saved = localStorage.getItem(this.STORAGE_KEY);
+    return saved ? JSON.parse(saved) : [];
+  }
 
-  return this.apiService.getData().pipe(
-    map(res => {
-      const merged: Product[] = res.map((apiProduct, index) => ({
-        ...apiProduct,
-        uid: `${apiProduct.id}-${index}`,
-        amountInCart: 0,
-        availableAmount: apiProduct.availableAmount ?? 0,
-        minOrderAmount: apiProduct.minOrderAmount ?? 1
-      }));
-      this.setProducts(merged);
-      return merged; // <-- emit merged array
-    })
-  );
-}
+  fetchProducts(): Observable<Product[]> {
+    if (this.productsValue.length) return of(this.productsValue);
 
+    return this.apiService.getData().pipe(
+      map(res => {
+        const savedState = this.getCartState();
+        const merged: Product[] = res.map((apiProduct, index) => {
+          const uid = `${apiProduct.id}-${index}`;
+          const savedItem = savedState.find(item => item.uid === uid);
+          const amountInCart = savedItem ? savedItem.amountInCart : 0;
+          const availableAmount = (apiProduct.availableAmount ?? 0) - amountInCart;
+
+          return {
+            ...apiProduct,
+            uid: uid,
+            amountInCart: amountInCart,
+            availableAmount: availableAmount,
+            minOrderAmount: apiProduct.minOrderAmount ?? 1
+          };
+        });
+        this.setProducts(merged);
+        return merged;
+      })
+    );
+  }
 
   updateProduct(updated: Product) {
     const newProducts = this.productsValue.map(p =>
       p.uid === updated.uid ? updated : p
     );
-    this._products.next(newProducts);
+    this.setProducts(newProducts);
   }
 
   increaseAmount(product: Product) {

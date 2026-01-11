@@ -5,7 +5,7 @@ import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Product } from '../../interfaces/product';
-import { Subscription } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 
 @Component({
   selector: 'app-cart',
@@ -24,10 +24,12 @@ export class CartComponent implements OnInit {
   maxAmountMessageId: string = '';
 
   ngOnInit() {
+    this.sub.add(this.cartService.fetchProducts().subscribe());
+
     this.sub.add(this.cartService.products$.subscribe(products => {
       this.cartList = products.filter(product => product.amountInCart > 0);
     }));
-    
+
     this.sub.add(this.cartService.messageUid$.subscribe(uid => {
       this.maxAmountMessageId = uid;
     }));
